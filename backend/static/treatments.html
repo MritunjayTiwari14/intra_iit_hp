@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Treatments</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { padding: 2rem; }
+        .treatment-card {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--stable);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header style="margin-bottom: 2rem;">
+        <h1>🚑 Active Treatments & Interventions</h1>
+        <p style="color: var(--text-muted)">Manage patients currently undergoing critical care protocols.</p>
+    </header>
+
+    <div id="treatments-container">
+        <!-- Filled by JS -->
+    </div>
+
+    <script>
+        async function handleResolve(escId) {
+            try {
+                await fetch('/api/clinician-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        escalation_id: escId, 
+                        action: 'RESOLVE', 
+                        clinician_id: "dr_m_smith", 
+                        dismiss_reason: "Treatment successful, returning to baseline." 
+                    })
+                });
+            } catch(e) {
+                console.error(e);
+                alert('Failed to resolve');
+            }
+        }
+
+        function renderTreatments(escalations) {
+            const container = document.getElementById('treatments-container');
+            container.innerHTML = '';
+            
+            const active = escalations.active || [];
+            const accepted = active.filter(e => e.status === 'ACCEPTED');
+            
+            if (accepted.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted)">No active treatments right now.</p>';
+                return;
+            }
+
+            accepted.forEach(esc => {
+                const div = document.createElement('div');
+                div.className = 'treatment-card';
+                div.innerHTML = `
+                    <h3 style="color: var(--stable); margin-bottom: 0.5rem;">Patient: ${esc.patient_id} - ${esc.escalation_type}</h3>
+                    <div style="margin-bottom: 1rem; color: var(--text-muted);">
+                        <strong>Started:</strong> ${new Date(esc.timestamp).toLocaleTimeString()}<br>
+                        <strong>Active Protocol:</strong> ${esc.Recommended_Action}
+                    </div>
+                    <button onclick="handleResolve('${esc.escalation_id}')" style="background: var(--stable-bg); padding: 0.5rem 1rem; border-radius: 4px; border:none; color:white; cursor:pointer; font-weight: bold;">✅ Resolve & Return to Stable</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            const ws = new WebSocket(wsUrl);
+
+            ws.onmessage = function(event) {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'escalations_update') {
+                    renderTreatments(msg.data);
+                }
+            };
+            ws.onclose = function() { setTimeout(connectWebSocket, 2000); };
+        }
+        
+        connectWebSocket();
+    </script>
+</body>
+</html>

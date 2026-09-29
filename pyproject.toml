@@ -1,0 +1,29 @@
+[project]
+name = "clinical-deterioration-copilot"
+version = "0.1.0"
+description = "Agentic Clinical Deterioration & Escalation Copilot"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "streamlit>=1.33.0",
+    "langgraph==0.4.8",
+    "langchain-core==0.3.63",
+    "qdrant-client>=1.9.0",
+    "pydantic==2.11.4",
+    "plotly>=5.20.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "requests>=2.31.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "redis>=5.0.3",
+    "psycopg[binary]>=3.1.18",
+    "kafka-python-ng>=2.2.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.1.1",
+]

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Deterioration Copilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="top-nav">
+        <div class="logo">
+            <h1>Clinical Deterioration Copilot</h1>
+        </div>
+        <div class="telemetry">
+            <div class="metric"><span class="label">Cohort</span><span class="value" id="cohort-count">0</span></div>
+            <div class="metric"><span class="label">Escalations</span><span class="value" id="escalation-count">0</span></div>
+            <div class="metric"><span class="label">Status</span><span class="value live-indicator">LIVE</span></div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+
+
+        <main class="dashboard">
+            <section class="panel cohort-panel">
+                <h2>Cohort Priority Ranking</h2>
+                <div class="table-container">
+                    <table id="cohort-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Bed</th>
+                                <th>Urgency</th>
+                                <th>MEWS</th>
+                                <th>HR</th>
+                                <th>BP (MAP)</th>
+                                <th>SpO2</th>
+                                <th>RR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel details-panel">
+                <h2>Patient Detail: <span id="selected-patient-id">None</span></h2>
+                <div class="charts-grid">
+                    <div class="chart-container"><canvas id="chart-hr"></canvas></div>
+                    <div class="chart-container"><canvas id="chart-bp"></canvas></div>
+                    <div class="chart-container"><canvas id="chart-spo2"></canvas></div>
+                    <div class="chart-container"><canvas id="chart-rr"></canvas></div>
+                </div>
+                
+                <div id="escalation-cards-container" class="escalations-area">
+                    <!-- Escalation SBAR cards injected here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
